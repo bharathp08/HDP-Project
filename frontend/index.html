@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Predictor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .form-input {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 0.75rem;
+            width: 100%;
+            transition: all 0.3s;
+            background-color: #f9fafb;
+        }
+        .form-input:focus {
+            border-color: #6366f1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        .submit-button {
+            background-color: #6366f1;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(99, 102, 241, 0.25);
+        }
+        .submit-button:hover {
+            background-color: #4f46e5;
+            transform: translateY(-1px);
+        }
+        .result-card {
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .result-high {
+            background-color: #fef2f2;
+            border-left: 4px solid #ef4444;
+        }
+        .result-low {
+            background-color: #f0fdf4;
+            border-left: 4px solid #10b981;
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-indigo-900">Heart Disease Risk Assessment</h1>
+                <p class="text-gray-600">Enter your health details to check heart disease risk</p>
+            </div>
+            <div class="bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full text-sm font-medium">
+                Medical Assessment Tool
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <form id="predictionForm" class="space-y-6">
+                <input type="hidden" name="sex" value="1">
+                <input type="hidden" name="fbs" value="0">
+                <input type="hidden" name="exang" value="0">
+                <input type="hidden" name="restecg" value="1">
+                <input type="hidden" name="oldpeak" value="1.5">
+                <input type="hidden" name="slope" value="2">
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="form-label">Age</label>
+                            <input type="number" class="form-input" name="age" min="1" max="120" required>
+                        </div>
+                        <div>
+                            <label class="form-label">Resting Blood Pressure (mmHg)</label>
+                            <input type="number" class="form-input" name="trestbps" min="50" max="250" required>
+                        </div>
+                        <div>
+                            <label class="form-label">Cholesterol (mg/dl)</label>
+                            <input type="number" class="form-input" name="chol" min="50" max="600" required>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="form-label">Chest Pain Type</label>
+                            <select class="form-input" name="cp" required>
+                                <option value="0">Typical Angina</option>
+                                <option value="1">Atypical Angina</option>
+                                <option value="2">Non-anginal Pain</option>
+                                <option value="3">Asymptomatic</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Max Heart Rate</label>
+                            <input type="number" class="form-input" name="thalach" min="60" max="220" value="150" required>
+                        </div>
+                        <div>
+                            <label class="form-label">ST Depression</label>
+                            <input type="number" step="0.1" class="form-input" name="oldpeak" min="0" max="6.2" value="1.5" required>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="form-label">Major Vessels (0-3)</label>
+                            <select class="form-input" name="ca" required>
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Thalassemia</label>
+                            <select class="form-input" name="thal" required>
+                                <option value="0">Normal</option>
+                                <option value="1">Fixed Defect</option>
+                                <option value="2">Reversible Defect</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Exercise Induced Angina</label>
+                            <select class="form-input" name="exang">
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center pt-4">
+                    <button type="submit" class="submit-button flex items-center justify-center mx-auto">
+                        <span class="submit-text">Generate Risk Assessment</span>
+                        <svg class="animate-spin h-5 w-5 ml-2 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div id="error" class="hidden p-4 bg-red-100 text-red-700 rounded-lg mb-6"></div>
+
+        <div id="resultSection" class="hidden">
+            <div id="result" class="result-card"></div>
+            
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Assessment Report</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="stat-card">
+                        <p class="text-sm text-gray-500">Risk Level</p>
+                        <p id="riskLevel" class="text-2xl font-bold"></p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-sm text-gray-500">Confidence</p>
+                        <p id="confidenceLevel" class="text-2xl font-bold"></p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-sm text-gray-500">Prediction Code</p>
+                        <p id="predictionCode" class="text-2xl font-bold"></p>
+                    </div>
+                </div>
+                
+                <div id="preventionTips" class="bg-white rounded-xl p-6 shadow-sm">
+                    <h4 class="font-semibold text-lg mb-4">Recommended Actions:</h4>
+                    <div id="highRiskTips" class="hidden space-y-3">
+                        <div class="flex items-start">
+                            <span class="text-red-500 mr-2">🩺</span>
+                            <p>Consult a cardiologist promptly for a comprehensive evaluation</p>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-red-500 mr-2">🚭</span>
+                            <p>Quit smoking if applicable - smoking significantly increases heart disease risk</p>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-red-500 mr-2">🏥</span>
+                            <p>Consider stress testing and additional cardiac diagnostics</p>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-red-500 mr-2">💊</span>
+                            <p>Discuss medication options with your healthcare provider</p>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-red-500 mr-2">🥗</span>
+                            <p>Follow a heart-healthy diet low in saturated fats and sodium</p>
+                        </div>
+                    </div>
+                    <div id="lowRiskTips" class="hidden space-y-3">
+                        <div class="flex items-start">
+                            <span class="text-green-500 mr-2">🏃</span>
+                            <p>Maintain regular exercise - aim for at least 150 minutes of moderate activity weekly</p>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-green-500 mr-2">🥗</span>
+                            <p>Follow a heart-healthy diet rich in fruits, vegetables, and whole grains</p>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-green-500 mr-2">🩺</span>
+                            <p>Continue regular check-ups with your healthcare provider</p>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-green-500 mr-2">😴</span>
+                            <p>Ensure adequate sleep and stress management</p>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-green-500 mr-2">🚭</span>
+                            <p>Avoid smoking and limit alcohol consumption</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <p class="text-xs text-gray-500 mt-8 text-center">
+            Note: This tool is for informational purposes only and not medical advice. 
+            Consult a healthcare professional for medical concerns.
+        </p>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const spinner = submitBtn.querySelector('svg');
+            const btnText = submitBtn.querySelector('.submit-text');
+            
+            btnText.classList.add('invisible');
+            spinner.classList.remove('hidden');
+            submitBtn.disabled = true;
+
+            try {
+                const formData = new FormData(e.target);
+                
+                const requiredFields = ['age', 'trestbps', 'chol', 'cp', 'ca', 'thal', 'thalach', 'oldpeak'];
+                const missingFields = requiredFields.filter(field => !formData.get(field));
+                
+                if (missingFields.length > 0) {
+                    throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+                }
+
+                const data = Object.fromEntries(formData.entries());
+            
+                // Convert numerical values to numbers
+                const numericFields = ['age', 'trestbps', 'chol', 'cp', 'thalach', 'oldpeak'];
+                numericFields.forEach(field => data[field] = Number(data[field]));
+                
+                // Set default values if not provided
+                data.sex = data.sex || 1;
+                data.fbs = data.fbs || 0;
+                data.exang = data.exang || 0;
+                data.slope = data.slope || 2;
+
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                }).catch(error => {
+                    throw new Error(`API Connection Failed: Ensure the Flask server is running`);
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Show result section
+                    document.getElementById('resultSection').classList.remove('hidden');
+                    
+                    // Update main result card
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.className = `result-card ${result.prediction ? 'result-high' : 'result-low'}`;
+                    resultDiv.innerHTML = `
+                        <h3 class="text-xl font-bold mb-2">${result.interpretation}</h3>
+                        <p class="text-gray-700">Based on the provided health information, our model has assessed your heart disease risk.</p>
+                    `;
+                    
+                    // Update report stats
+                    document.getElementById('riskLevel').textContent = result.prediction ? 'High' : 'Low';
+                    document.getElementById('riskLevel').className = result.prediction ? 'text-2xl font-bold text-red-600' : 'text-2xl font-bold text-green-600';
+                    
+                    document.getElementById('confidenceLevel').textContent = `${(result.confidence * 100).toFixed(1)}%`;
+                    document.getElementById('predictionCode').textContent = `${result.prediction} (${result.prediction ? 'High Risk' : 'Low Risk'})`;
+                    
+                    // Show prevention tips
+                    const tipsSection = document.getElementById('preventionTips');
+                    document.getElementById('highRiskTips').classList.toggle('hidden', result.prediction !== 1);
+                    document.getElementById('lowRiskTips').classList.toggle('hidden', result.prediction !== 0);
+                    
+                    document.getElementById('error').classList.add('hidden');
+                } else {
+                    throw new Error(result.error || 'Unknown error occurred');
+                }
+            } catch (error) {
+                const errorDiv = document.getElementById('error');
+                errorDiv.textContent = `Error: ${error.message}`;
+                errorDiv.classList.remove('hidden');
+                document.getElementById('resultSection').classList.add('hidden');
+            } finally {
+                btnText.classList.remove('invisible');
+                spinner.classList.remove('hidden');
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
